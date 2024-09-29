@@ -1,0 +1,46 @@
+version: '3.9' 
+services:
+  book_catalog:
+    build:
+      context: ./book_catalog
+      dockerfile: Dockerfile
+    image: sit722wk7.azurecr.io/bookcatalog:latest  
+    ports:
+      - "3001:80"  
+    environment:
+      - DATABASE_URL=postgresql://sit722wk7_user:lAog686j3z2HZsKEZ8BH9RCut7FNo6bD@dpg-crs03056l47c73cpnapg-a.oregon-postgres.render.com/sit722wk7?sslmode=require
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    platform: linux/amd64 
+
+  inventory_management:
+    build:
+      context: ./inventory_management
+      dockerfile: Dockerfile
+    image: sit722wk7.azurecr.io/inventorymanage:latest  
+    ports:
+      - "3002:80"  
+    environment:
+      - DATABASE_URL=postgresql://sit722wk7_user:lAog686j3z2HZsKEZ8BH9RCut7FNo6bD@dpg-crs03056l47c73cpnapg-a.oregon-postgres.render.com/sit722wk7
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    platform: linux/amd64  
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: sit722wk7_user
+      POSTGRES_PASSWORD: lAog686j3z2HZsKEZ8BH9RCut7FNo6bD
+      POSTGRES_DB: sit722wk7
+    ports:
+      - "5432:5432"  

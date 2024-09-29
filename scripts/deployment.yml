@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookcatalog-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookcatalog
+  template:
+    metadata:
+      labels:
+        app: bookcatalog
+    spec:
+      containers: 
+      - name: bookcatalog
+        image: sit722wk7.azurecr.io/bookcatalog:1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001  
+        env:
+        - name: DATABASE_URL 
+          value: "postgresql://sit722wk7_user:lAog686j3z2HZsKEZ8BH9RCut7FNo6bD@dpg-crs03056l47c73cpnapg-a.oregon-postgres.render.com/sit722wk7"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookcatalog-service
+spec:
+  selector:
+    app: bookcatalog
+  ports:
+    - protocol: TCP
+      port: 3001  
+      targetPort: 3001 
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventorymanage-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventorymanage
+  template:
+    metadata:
+      labels:
+        app: inventorymanage
+    spec:
+      containers:
+      - name: inventorymanage
+        image: sit722wk7.azurecr.io/inventorymanage:1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3002  
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722wk7_user:lAog686j3z2HZsKEZ8BH9RCut7FNo6bD@dpg-crs03056l47c73cpnapg-a.oregon-postgres.render.com/sit722wk7"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventorymanage-service
+spec:
+  selector:
+    app: inventorymanage
+  ports:
+  - protocol: TCP
+    port: 3002  
+    targetPort: 3002  
+  type: LoadBalancer
